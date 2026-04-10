@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "23709564800",
+    "project_id": "zentrack-19fdd",
+    "storage_bucket": "zentrack-19fdd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23709564800:android:10991323f09ac1f2778b65",
+        "android_client_info": {
+          "package_name": "com.example.zentrack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvIUTJy06uy9eR7agNZFX8giIg6pQwEx0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23709564800:android:12ab737fb985c166778b65",
+        "android_client_info": {
+          "package_name": "com.zentrack.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvIUTJy06uy9eR7agNZFX8giIg6pQwEx0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

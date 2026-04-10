@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Zentrack</string>
+    <string name="tagline">Navigate Your Journey</string>
+    <string name="get_started">GET STARTED</string>
+    <string name="login">LOGIN</string>
+    <string name="start_tracking">START TRACKING</string>
+    <string name="stop_tracking">STOP TRACKING</string>
+    <string name="dismiss_alarm">DISMISS ALARM</string>
+    <string name="save_settings">SAVE SETTINGS</string>
+</resources>

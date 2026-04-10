@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/bg_splash">
+
+    <ImageView
+        android:id="@+id/splashLogo"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/zentrack_logo"
+        android:scaleType="fitCenter"
+        android:contentDescription="Zentrack Logo"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="zen"
+            android:textColor="#2DA86E"
+            android:textSize="38sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="track"
+            android:textColor="#C8DFF5"
+            android:textSize="38sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NAVIGATE YOUR JOURNEY"
+        android:textColor="#4A7CA0"
+        android:textSize="10sp"
+        android:letterSpacing="0.2"
+        android:layout_marginTop="4dp"/>
+
+    <View
+        android:layout_width="60dp"
+        android:layout_height="2dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/divider_line"/>
+
+    <Button
+        android:id="@+id/btnGetStarted"
+        android:layout_width="230dp"
+        android:layout_height="52dp"
+        android:text="GET STARTED"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:background="@drawable/btn_get_started"
+        android:layout_marginBottom="12dp"/>
+
+    <Button
+        android:id="@+id/btnLoginSplash"
+        android:layout_width="230dp"
+        android:layout_height="48dp"
+        android:text="LOGIN"
+        android:textColor="#2DA86E"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:background="@drawable/btn_login_outline"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="v1.0 · Smart Location Alarm"
+        android:textColor="#1A3550"
+        android:textSize="9sp"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>

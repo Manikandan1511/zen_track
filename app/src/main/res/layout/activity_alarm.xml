@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/alarm_bg"
+    android:padding="32dp">
+
+    <FrameLayout
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp">
+        <View
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:background="@drawable/alarm_ring_outer"/>
+        <TextView
+            android:id="@+id/tvBell"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="🔔"
+            android:textSize="52sp"
+            android:gravity="center"/>
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Approaching Destination!"
+        android:textColor="#F0E0E0"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="6dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You are within the alert zone"
+        android:textColor="#C07080"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:layout_marginBottom="24dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/alarm_card_bg"
+        android:padding="16dp"
+        android:layout_marginBottom="32dp">
+        <TextView
+            android:id="@+id/tvAlarmDestination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Destination"
+            android:textColor="#F0E0E0"
+            android:textSize="17sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/tvAlarmDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="calculating..."
+            android:textColor="#C07080"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnDismissAlarm"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
+        android:paddingStart="44dp"
+        android:paddingEnd="44dp"
+        android:text="DISMISS ALARM"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:background="@drawable/btn_red_round"/>
+
+</LinearLayout>

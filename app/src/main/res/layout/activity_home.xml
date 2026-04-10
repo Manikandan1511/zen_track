@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/zt_navy_darkest">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/topbar_bg"
+        android:orientation="vertical"
+        android:paddingTop="40dp"
+        android:paddingBottom="12dp"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Good evening,"
+                    android:textColor="#3A6080"
+                    android:textSize="10sp"/>
+                <TextView
+                    android:id="@+id/tvUsername"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Traveller"
+                    android:textColor="#A8D4F0"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="2dp"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:text="ZT"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:background="@drawable/btn_primary"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="● GPS Active"
+            android:textColor="#2DA86E"
+            android:textSize="9sp"
+            android:textStyle="bold"
+            android:background="@drawable/gps_pill_bg"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_marginTop="10dp"/>
+    </LinearLayout>
+
+    <org.osmdroid.views.MapView
+        android:id="@+id/osmMap"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ROUTE"
+                android:textColor="#1A4060"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/card_bg"
+                android:padding="14dp"
+                android:layout_marginBottom="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:text="📍"
+                        android:textSize="13sp"
+                        android:gravity="center"
+                        android:layout_marginEnd="10dp"/>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="FROM"
+                            android:textColor="#1A4060"
+                            android:textSize="8sp"
+                            android:textStyle="bold"/>
+                        <EditText
+                            android:id="@+id/etFromLocation"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:hint="Enter starting location"
+                            android:hintTextColor="#1E4060"
+                            android:textColor="#A8D4F0"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:padding="0dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="#0A3050"
+                    android:layout_marginBottom="10dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:text="🏁"
+                        android:textSize="13sp"
+                        android:gravity="center"
+                        android:layout_marginEnd="10dp"/>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="DESTINATION"
+                            android:textColor="#1A4060"
+                            android:textSize="8sp"
+                            android:textStyle="bold"/>
+                        <EditText
+                            android:id="@+id/etDestination"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:hint="Where are you going?"
+                            android:hintTextColor="#1E4060"
+                            android:textColor="#A8D4F0"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:padding="0dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ALERT DISTANCE"
+                android:textColor="#1A4060"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15"
+                android:layout_marginBottom="8dp"/>
+
+            <RadioGroup
+                android:id="@+id/rgDistance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+                <RadioButton android:id="@+id/rb500m"
+                    android:layout_width="wrap_content" android:layout_height="36dp"
+                    android:text="500m" android:textColor="#4A7CA0" android:textSize="11sp"
+                    android:button="@null" android:background="@drawable/chip_selector"
+                    android:gravity="center" android:paddingStart="12dp" android:paddingEnd="12dp"
+                    android:layout_marginEnd="6dp"/>
+                <RadioButton android:id="@+id/rb1km"
+                    android:layout_width="wrap_content" android:layout_height="36dp"
+                    android:text="1 km" android:textColor="#4A7CA0" android:textSize="11sp"
+                    android:button="@null" android:background="@drawable/chip_selector"
+                    android:gravity="center" android:paddingStart="12dp" android:paddingEnd="12dp"
+                    android:layout_marginEnd="6dp" android:checked="true"/>
+                <RadioButton android:id="@+id/rb2km"
+                    android:layout_width="wrap_content" android:layout_height="36dp"
+                    android:text="2 km" android:textColor="#4A7CA0" android:textSize="11sp"
+                    android:button="@null" android:background="@drawable/chip_selector"
+                    android:gravity="center" android:paddingStart="12dp" android:paddingEnd="12dp"
+                    android:layout_marginEnd="6dp"/>
+                <RadioButton android:id="@+id/rb5km"
+                    android:layout_width="wrap_content" android:layout_height="36dp"
+                    android:text="5 km" android:textColor="#4A7CA0" android:textSize="11sp"
+                    android:button="@null" android:background="@drawable/chip_selector"
+                    android:gravity="center" android:paddingStart="12dp" android:paddingEnd="12dp"/>
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/etCustomDistance"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@drawable/input_bg"
+                android:hint="Custom distance in km (e.g. 1.5)"
+                android:hintTextColor="#1A4060"
+                android:textColor="#A8D4F0"
+                android:inputType="numberDecimal"
+                android:padding="12dp"
+                android:textSize="13sp"
+                android:layout_marginBottom="20dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btnStartTracking"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="START TRACKING"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    android:background="@drawable/btn_primary"/>
+                <Button
+                    android:id="@+id/btnStopTracking"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:text="■"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:background="@drawable/btn_red"
+                    android:enabled="false"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/zt_navy_darkest"
+        app:itemIconTint="#3A6080"
+        app:itemTextColor="#3A6080"
+        app:itemActiveIndicatorColor="#0D3050"
+        app:menu="@menu/bottom_nav_menu"/>
+
+</LinearLayout>

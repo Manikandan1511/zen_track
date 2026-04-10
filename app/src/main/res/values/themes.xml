@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Zentrack" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/zt_green</item>
+        <item name="colorPrimaryVariant">@color/zt_green_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/zt_teal</item>
+        <item name="android:statusBarColor">@color/zt_navy_darkest</item>
+        <item name="android:navigationBarColor">@color/zt_navy_darkest</item>
+        <item name="android:windowBackground">@color/zt_navy_darkest</item>
+    </style>
+</resources>

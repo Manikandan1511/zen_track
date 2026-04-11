@@ -1,18 +1,25 @@
 package com.example.zentrack;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
-import androidx.preference.PreferenceManager;
+import android.os.Looper;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import androidx.preference.PreferenceManager;
+import com.google.android.gms.location.*;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,150 +29,127 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity {
 
     private static final int LOC_PERM = 101;
-
     private EditText etFrom, etDest, etCustom;
     private RadioGroup rgDistance;
     private Button btnStart, btnStop;
     private boolean isTracking = false;
 
     private MapView osmMap;
+    private MyLocationNewOverlay locationOverlay;
     private FusedLocationProviderClient fusedClient;
+
+    // Receiver to get live updates from the Background Service
+    private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (LocationTrackingService.ACTION_LOCATION_UPDATE.equals(intent.getAction())) {
+                double lat = intent.getDoubleExtra("lat", 0);
+                double lng = intent.getDoubleExtra("lng", 0);
+                
+                if (intent.hasExtra("destLat")) {
+                    double dLat = intent.getDoubleExtra("destLat", 0);
+                    double dLng = intent.getDoubleExtra("destLng", 0);
+                    String dName = intent.getStringExtra("destName");
+                    showRouteOnMap(lat, lng, dLat, dLng, dName);
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // OSMDroid needs this BEFORE setContentView
-        Configuration.getInstance().load(this,
-                PreferenceManager.getDefaultSharedPreferences(this));
+        Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
         Configuration.getInstance().setUserAgentValue(getPackageName());
-
         setContentView(R.layout.activity_home);
 
-        // Location permission
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOC_PERM);
+        fusedClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOC_PERM);
         }
 
-        // Show logged-in user's email
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            TextView tvUsername = findViewById(R.id.tvUsername);
-            String email = user.getEmail();
-            if (email != null) tvUsername.setText(email.split("@")[0]);
-        }
-
-        etFrom     = findViewById(R.id.etFromLocation);
-        etDest     = findViewById(R.id.etDestination);
-        etCustom   = findViewById(R.id.etCustomDistance);
+        etFrom = findViewById(R.id.etFromLocation);
+        etDest = findViewById(R.id.etDestination);
+        etCustom = findViewById(R.id.etCustomDistance);
         rgDistance = findViewById(R.id.rgDistance);
-        btnStart   = findViewById(R.id.btnStartTracking);
-        btnStop    = findViewById(R.id.btnStopTracking);
+        btnStart = findViewById(R.id.btnStartTracking);
+        btnStop = findViewById(R.id.btnStopTracking);
 
         btnStart.setOnClickListener(v -> startTracking());
-        btnStop.setOnClickListener(v  -> stopTracking());
+        btnStop.setOnClickListener(v -> stopTracking());
 
-        BottomNavigationView nav = findViewById(R.id.bottomNav);
-        nav.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.nav_settings) {
-                startActivity(new Intent(this, SettingsActivity.class));
-            }
-            return true;
-        });
-
-        // Setup OSM Map
         osmMap = findViewById(R.id.osmMap);
         osmMap.setTileSource(TileSourceFactory.MAPNIK);
         osmMap.setMultiTouchControls(true);
-        osmMap.getController().setZoom(14.0);
+        osmMap.getController().setZoom(16.0);
 
-        fusedClient = LocationServices.getFusedLocationProviderClient(this);
-        zoomToCurrentLocation();
+        locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), osmMap);
+        locationOverlay.enableMyLocation();
+        locationOverlay.enableFollowLocation();
+        osmMap.getOverlays().add(locationOverlay);
+
+        updateCurrentAddress();
     }
 
-    private void zoomToCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) return;
-
-        fusedClient.getLastLocation().addOnSuccessListener(loc -> {
-            if (loc != null) {
-                GeoPoint point = new GeoPoint(loc.getLatitude(), loc.getLongitude());
-                osmMap.getController().animateTo(point);
-                osmMap.getController().setZoom(15.0);
-
-                Marker me = new Marker(osmMap);
-                me.setPosition(point);
-                me.setTitle("You are here");
-                me.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-                osmMap.getOverlays().clear();
-                osmMap.getOverlays().add(me);
-                osmMap.invalidate();
-            }
-        });
+    private void updateCurrentAddress() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedClient.getLastLocation().addOnSuccessListener(loc -> {
+                if (loc != null) {
+                    Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                    try {
+                        List<Address> addresses = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
+                        if (!addresses.isEmpty()) etFrom.setText(addresses.get(0).getAddressLine(0));
+                    } catch (IOException e) { etFrom.setText("Current Location"); }
+                }
+            });
+        }
     }
 
-    // Called by LocationTrackingService to update map with route line
-    public void showRouteOnMap(double uLat, double uLng,
-                               double dLat, double dLng, String destName) {
-        if (osmMap == null) return;
-
-        osmMap.getOverlays().clear();
+    public void showRouteOnMap(double uLat, double uLng, double dLat, double dLng, String destName) {
+        // Clear old markers but keep the blue user dot
+        osmMap.getOverlays().removeIf(o -> o instanceof Marker || o instanceof Polyline);
 
         GeoPoint userPos = new GeoPoint(uLat, uLng);
         GeoPoint destPos = new GeoPoint(dLat, dLng);
 
-        // User marker
-        Marker userMarker = new Marker(osmMap);
-        userMarker.setPosition(userPos);
-        userMarker.setTitle("You");
-        userMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        osmMap.getOverlays().add(userMarker);
-
-        // Destination marker
+        // Add Destination Marker
         Marker destMarker = new Marker(osmMap);
         destMarker.setPosition(destPos);
         destMarker.setTitle(destName);
         destMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         osmMap.getOverlays().add(destMarker);
 
-        // Route line
+        // Draw Route Line
         Polyline line = new Polyline();
         line.addPoint(userPos);
         line.addPoint(destPos);
         line.getOutlinePaint().setColor(Color.parseColor("#2DA86E"));
-        line.getOutlinePaint().setStrokeWidth(8f);
+        line.getOutlinePaint().setStrokeWidth(10f);
         osmMap.getOverlays().add(line);
 
         osmMap.invalidate();
-
-        // Zoom to fit both points
-        osmMap.zoomToBoundingBox(
-                new org.osmdroid.util.BoundingBox(
-                        Math.max(uLat, dLat) + 0.01,
-                        Math.max(uLng, dLng) + 0.01,
-                        Math.min(uLat, dLat) - 0.01,
-                        Math.min(uLng, dLng) - 0.01
-                ), true, 100
-        );
     }
 
     private void startTracking() {
-        String from = etFrom.getText().toString().trim();
         String dest = etDest.getText().toString().trim();
-        if (from.isEmpty()) { etFrom.setError("Enter starting location"); return; }
         if (dest.isEmpty()) { etDest.setError("Enter destination"); return; }
 
         double alertKm = getSelectedDistance();
-        String custom  = etCustom.getText().toString().trim();
+        String custom = etCustom.getText().toString().trim();
         if (!custom.isEmpty()) {
-            try { alertKm = Double.parseDouble(custom); }
-            catch (NumberFormatException e) { etCustom.setError("Invalid number"); return; }
+            try { alertKm = Double.parseDouble(custom); } catch (Exception e) { etCustom.setError("Invalid number"); return; }
         }
 
         Intent si = new Intent(this, LocationTrackingService.class);
@@ -176,7 +160,7 @@ public class HomeActivity extends AppCompatActivity {
         isTracking = true;
         btnStart.setEnabled(false);
         btnStop.setEnabled(true);
-        Toast.makeText(this, "Tracking started! Alert at " + alertKm + " km", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Tracking Started!", Toast.LENGTH_SHORT).show();
     }
 
     private void stopTracking() {
@@ -184,39 +168,36 @@ public class HomeActivity extends AppCompatActivity {
         isTracking = false;
         btnStart.setEnabled(true);
         btnStop.setEnabled(false);
-        osmMap.getOverlays().clear();
+        osmMap.getOverlays().removeIf(o -> o instanceof Marker || o instanceof Polyline);
         osmMap.invalidate();
-        Toast.makeText(this, "Tracking stopped.", Toast.LENGTH_SHORT).show();
     }
 
     private double getSelectedDistance() {
         int id = rgDistance.getCheckedRadioButtonId();
         if (id == R.id.rb500m) return 0.5;
-        if (id == R.id.rb2km)  return 2.0;
-        if (id == R.id.rb5km)  return 5.0;
+        if (id == R.id.rb2km) return 2.0;
+        if (id == R.id.rb5km) return 5.0;
         return 1.0;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int code, @NonNull String[] p, @NonNull int[] r) {
-        super.onRequestPermissionsResult(code, p, r);
-        if (code == LOC_PERM && r.length > 0 && r[0] == PackageManager.PERMISSION_GRANTED) {
-            zoomToCurrentLocation();
-        } else {
-            Toast.makeText(this, "Location permission is required!", Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         osmMap.onResume();
-        if (!isTracking) { btnStart.setEnabled(true); btnStop.setEnabled(false); }
+        locationOverlay.enableMyLocation();
+        IntentFilter filter = new IntentFilter(LocationTrackingService.ACTION_LOCATION_UPDATE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(locationReceiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(locationReceiver, filter);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         osmMap.onPause();
+        locationOverlay.disableMyLocation();
+        unregisterReceiver(locationReceiver);
     }
 }

@@ -12,7 +12,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,7 +47,6 @@ public class HomeActivity extends AppCompatActivity {
     private MyLocationNewOverlay locationOverlay;
     private FusedLocationProviderClient fusedClient;
 
-    // Receiver to get live updates from the Background Service
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -80,6 +78,13 @@ public class HomeActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOC_PERM);
         }
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            TextView tvUsername = findViewById(R.id.tvUsername);
+            String email = user.getEmail();
+            if (email != null) tvUsername.setText(email.split("@")[0]);
+        }
+
         etFrom = findViewById(R.id.etFromLocation);
         etDest = findViewById(R.id.etDestination);
         etCustom = findViewById(R.id.etCustomDistance);
@@ -101,6 +106,19 @@ public class HomeActivity extends AppCompatActivity {
         osmMap.getOverlays().add(locationOverlay);
 
         updateCurrentAddress();
+
+        // Bottom Navigation
+        BottomNavigationView nav = findViewById(R.id.bottomNav);
+        nav.setSelectedItemId(R.id.nav_home);
+        nav.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nav_settings) {
+                Intent intent = new Intent(this, SettingsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
+                return true;
+            }
+            return true;
+        });
     }
 
     private void updateCurrentAddress() {
@@ -118,20 +136,17 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void showRouteOnMap(double uLat, double uLng, double dLat, double dLng, String destName) {
-        // Clear old markers but keep the blue user dot
         osmMap.getOverlays().removeIf(o -> o instanceof Marker || o instanceof Polyline);
 
         GeoPoint userPos = new GeoPoint(uLat, uLng);
         GeoPoint destPos = new GeoPoint(dLat, dLng);
 
-        // Add Destination Marker
         Marker destMarker = new Marker(osmMap);
         destMarker.setPosition(destPos);
         destMarker.setTitle(destName);
         destMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         osmMap.getOverlays().add(destMarker);
 
-        // Draw Route Line
         Polyline line = new Polyline();
         line.addPoint(userPos);
         line.addPoint(destPos);

@@ -3,9 +3,11 @@ package com.example.zentrack;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.*;
 import android.net.Uri;
 import android.os.*;
+import android.provider.Settings;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.zentrack.R;
@@ -20,7 +22,6 @@ public class AlarmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // API 27+ way to show over lock screen
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true);
             setTurnScreenOn(true);
@@ -50,14 +51,21 @@ public class AlarmActivity extends AppCompatActivity {
         shakeAnim.setRepeatMode(ValueAnimator.REVERSE);
         shakeAnim.start();
 
-        playAlarmSound();
-        startVibration();
+        SharedPreferences prefs = getSharedPreferences("ZentrackPrefs", MODE_PRIVATE);
+        
+        if (prefs.getBoolean("ringEnabled", true)) {
+            playAlarmSound(prefs.getString("ringtoneUri", Settings.System.DEFAULT_ALARM_ALERT_URI.toString()));
+        }
+        
+        if (prefs.getBoolean("vibrationEnabled", true)) {
+            startVibration();
+        }
+        
         btnDismiss.setOnClickListener(v -> dismiss());
     }
 
-    private void playAlarmSound() {
-        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        if (uri == null) uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    private void playAlarmSound(String uriString) {
+        Uri uri = Uri.parse(uriString);
         ringtone = RingtoneManager.getRingtone(getApplicationContext(), uri);
         if (ringtone != null) ringtone.play();
     }
